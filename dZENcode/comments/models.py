@@ -19,6 +19,10 @@ class Comment(models.Model):
     def __str__(self):
         return f'{self.user_name} - {self.text[:50]}'
 
+    def save(self, *args, **kwargs):
+        self.html_validation()
+        super().save(*args, **kwargs)
+
     def html_validation(self):
         html_tags = re.findall(r"</?(.*?)>", str(self.text))
         for tag in html_tags:

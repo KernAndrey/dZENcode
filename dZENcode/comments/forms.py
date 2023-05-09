@@ -9,5 +9,5 @@ class NewComment(forms.Form):
     home_page = forms.URLField(max_length=256, required=False, label="Home page", widget=forms.TextInput(attrs={'class': 'form-control'}))
     captcha = CaptchaField(label="CAPTCHA")
     text = forms.CharField(max_length=1000, required=True, label="Text", widget=forms.Textarea(attrs={'class': 'form-control'}))
-    file = forms.FileField(required=False, widget=forms.FileInput(attrs={'class': 'form-control'}))
+    parent_id = forms.IntegerField(widget=forms.HiddenInput(attrs={'class': 'visually-hidden'}), label=False)
 

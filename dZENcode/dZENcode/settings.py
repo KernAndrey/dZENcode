@@ -9,11 +9,16 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+dotenv_path = BASE_DIR / '.env'
+load_dotenv(dotenv_path, override=True)
 
 
 # Quick-start development settings - unsuitable for production
@@ -82,6 +87,29 @@ DATABASES = {
     }
 }
 
+if os.getenv('ENVIRONMENT') == 'local':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres_db',
+            'USER': 'user',
+            'PASSWORD': 'password',
+            'HOST': 'db',
+            'PORT': 5432,
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres_db',
+            'USER': 'user',
+            'PASSWORD': 'password',
+            'HOST': 'db',
+            'PORT': 5432,
+        }
+    }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -123,3 +151,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
+CAPTCHA_FONT_SIZE = 32
+CAPTCHA_LENGTH = 4
+CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_dots',)
+CAPTCHA_LETTER_ROTATION = (-30, 30)
+CAPTCHA_IMAGE_SIZE = (120, 40)

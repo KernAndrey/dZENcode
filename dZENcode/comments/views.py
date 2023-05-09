@@ -26,9 +26,8 @@ class CommentListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['sort_field'] = self.request.GET.get('sort', '-created_date')
         context['menu'] = menu
-        print(context['comments'])
+        context['parent_id'] = self.request.GET.get('parent', 0)
         return context
 
 
@@ -36,6 +35,18 @@ class NewCommentView(FormView):
     template_name = 'new_comment.html'
     form_class = NewComment
     success_url = reverse_lazy('home')
+
+    def get(self, request, *args, **kwargs):
+
+        parent_id = kwargs['parent_id']
+        context = self.get_context_data()
+        context['parent_id'] = parent_id
+        return self.render_to_response(context)
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['parent_id'] = self.kwargs['parent_id']
+        return initial
 
     def form_valid(self, form):
         try:
@@ -46,19 +57,25 @@ class NewCommentView(FormView):
             return self.render_to_response(self.get_context_data(form=form))
 
     def save(self, cleaned_data):
-        # get_or_create User
         user_model, created = User.objects.get_or_create(
             user_name=cleaned_data['user_name'],
             email=cleaned_data['email'],
             home_page=cleaned_data['home_page']
         )
 
-        # Validate and create new Comment
-        new_comment = Comment()
-        new_comment.user_name = user_model
-        new_comment.text = cleaned_data['text']
-        new_comment.html_validation()
-        new_comment.save()
+        if cleaned_data['parent_id'] != 0:
+            parent_comment = Comment.objects.get(id=cleaned_data['parent_id'])
+
+            Comment.objects.create(
+                user_name=user_model,
+                text=cleaned_data['text'],
+                parent_comment=parent_comment
+            )
+        else:
+            Comment.objects.create(
+                user_name=user_model,
+                text=cleaned_data['text'],
+            )
 
 
 
