@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, FormView
 
@@ -36,12 +37,10 @@ class NewCommentView(FormView):
     form_class = NewComment
     success_url = reverse_lazy('home')
 
-    def get(self, request, *args, **kwargs):
-
-        parent_id = kwargs['parent_id']
-        context = self.get_context_data()
-        context['parent_id'] = parent_id
-        return self.render_to_response(context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['parent_id'] = self.kwargs['parent_id']
+        return context
 
     def get_initial(self):
         initial = super().get_initial()
@@ -76,6 +75,3 @@ class NewCommentView(FormView):
                 user_name=user_model,
                 text=cleaned_data['text'],
             )
-
-
-

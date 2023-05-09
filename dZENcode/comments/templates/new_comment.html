@@ -15,6 +15,8 @@
             {% if f.label %}
                 <p><label class="form-label" for="{{ f.id_for_label }}"><strong>{{f.label}}:</strong></label>{{ f }}</p>
                 <div class="form-error">{{ f.errors }}</div>
+            {% else %}
+                <p>{{ f }}</p>
             {% endif %}
         {% endfor %}
 
